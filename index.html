@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Will You Be My Valentine?</title>
+    <style>
+      :root {
+        --yes-scale: 1;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: radial-gradient(circle at 20% 20%, #ffdbe8, #ffc1d6 45%, #ff9fbe 100%);
+        color: #5f2340;
+        overflow-x: hidden;
+      }
+
+      .card {
+        width: min(92vw, 760px);
+        background: rgba(255, 255, 255, 0.86);
+        border-radius: 30px;
+        box-shadow: 0 24px 50px rgba(95, 35, 64, 0.2);
+        padding: clamp(1.2rem, 2.8vw, 2.2rem);
+        text-align: center;
+        border: 2px solid rgba(255, 255, 255, 0.9);
+        position: relative;
+        z-index: 1;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        color: #c02665;
+      }
+
+      .subtitle {
+        margin: 0.75rem 0 1.5rem;
+        font-size: clamp(1rem, 2.2vw, 1.2rem);
+      }
+
+      .cats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        gap: 1rem;
+        align-items: center;
+        justify-items: center;
+        margin-bottom: 1.6rem;
+      }
+
+      .cats img {
+        width: min(100%, 250px);
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        border: 3px solid #fff;
+      }
+
+      .buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1.2rem;
+        flex-wrap: nowrap;
+        min-height: 110px;
+      }
+
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 0.85rem 1.8rem;
+        font-size: clamp(1rem, 2.2vw, 1.2rem);
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 200ms ease, box-shadow 200ms ease, opacity 250ms ease;
+      }
+
+      #yesBtn {
+        position: relative;
+        z-index: 1;
+        background: linear-gradient(120deg, #ff4f9a, #ff2f70);
+        color: white;
+        transform: scale(var(--yes-scale));
+        transform-origin: center;
+        box-shadow: 0 8px 18px rgba(255, 47, 112, 0.35);
+      }
+
+      #noBtn {
+        position: relative;
+        z-index: 2;
+        background: #f5f6f8;
+        color: #5f2340;
+        box-shadow: 0 6px 14px rgba(95, 35, 64, 0.18);
+      }
+
+      .hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.1);
+        width: 0;
+        height: 0;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        overflow: hidden;
+      }
+
+      .success {
+        margin-top: 1rem;
+        font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+        color: #b61356;
+        min-height: 1.4em;
+      }
+
+      .love-overlay {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+        z-index: 4;
+      }
+
+      .love-text {
+        opacity: 0;
+        transform: scale(0.7);
+        transition: opacity 500ms ease, transform 500ms ease;
+        padding: 0.8rem 1.2rem;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.8);
+        color: #b61356;
+        font-size: clamp(1.3rem, 4vw, 2.4rem);
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .love-text.show {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .confetti-container {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 3;
+      }
+
+      .confetti {
+        position: absolute;
+        width: 10px;
+        height: 16px;
+        border-radius: 3px;
+        opacity: 0.95;
+        animation: confetti-burst 1200ms ease-out forwards;
+      }
+
+      @keyframes confetti-burst {
+        from {
+          transform: translate(0, 0) rotate(0deg);
+          opacity: 1;
+        }
+        to {
+          transform: translate(var(--tx), var(--ty)) rotate(var(--rot));
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>Will you be my valetine?</h1>
+      <p class="subtitle">Our cute kitty couple already says yes 💞</p>
+
+      <section class="cats" aria-label="Cute cat couple images">
+        <img src="assets/cat-couple-1.svg" alt="Cute blushing cat with a heart" />
+        <img src="assets/cat-couple-2.svg" alt="Cute smiling cat holding a heart" />
+      </section>
+
+      <div class="buttons">
+        <button id="yesBtn" type="button">YES 💖</button>
+        <button id="noBtn" type="button">NO 🙈</button>
+      </div>
+
+      <p class="success" id="message" aria-live="polite"></p>
+    </main>
+
+    <div class="confetti-container" id="confetti" aria-hidden="true"></div>
+    <div class="love-overlay" aria-hidden="true">
+      <p class="love-text" id="loveText">I Love You so much My Love ❤️</p>
+    </div>
+
+    <script>
+      const yesBtn = document.getElementById("yesBtn");
+      const noBtn = document.getElementById("noBtn");
+      const message = document.getElementById("message");
+      const confettiContainer = document.getElementById("confetti");
+      const loveText = document.getElementById("loveText");
+      const confettiColors = ["#ff2f70", "#ffcf5c", "#5fd3ff", "#8dff8a", "#c08bff", "#ff7aa2"];
+      let noClicks = 0;
+
+      noBtn.addEventListener("click", () => {
+        noClicks += 1;
+        const scale = 1 + noClicks * 0.45;
+        document.documentElement.style.setProperty("--yes-scale", scale.toFixed(2));
+
+        if (noClicks >= 5) {
+          noBtn.classList.add("hidden");
+          message.textContent = "No button disappeared... destiny says YES only 😻";
+        } else {
+          message.textContent = "Aww... try again 😽";
+        }
+      });
+
+      function burstConfetti() {
+        for (let i = 0; i < 140; i += 1) {
+          const piece = document.createElement("span");
+          piece.className = "confetti";
+          piece.style.left = `${50 + (Math.random() * 22 - 11)}%`;
+          piece.style.top = `${45 + (Math.random() * 8 - 4)}%`;
+          piece.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+          piece.style.setProperty("--tx", `${(Math.random() - 0.5) * 1200}px`);
+          piece.style.setProperty("--ty", `${Math.random() * 800 - 200}px`);
+          piece.style.setProperty("--rot", `${Math.random() * 1080 - 540}deg`);
+          piece.style.animationDuration = `${900 + Math.random() * 800}ms`;
+          confettiContainer.appendChild(piece);
+          piece.addEventListener("animationend", () => piece.remove());
+        }
+      }
+
+      yesBtn.addEventListener("click", () => {
+        message.textContent = "Yayyyyy! Best Valentine ever! 🥳💘";
+        loveText.classList.add("show");
+        burstConfetti();
+      });
+    </script>
+  </body>
+</html>
