@@ -21,6 +21,7 @@
         font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         background: radial-gradient(circle at 20% 20%, #ffdbe8, #ffc1d6 45%, #ff9fbe 100%);
         color: #5f2340;
+        overflow-x: hidden;
       }
 
       .card {
@@ -31,6 +32,8 @@
         padding: clamp(1.2rem, 2.8vw, 2.2rem);
         text-align: center;
         border: 2px solid rgba(255, 255, 255, 0.9);
+        position: relative;
+        z-index: 1;
       }
 
       h1 {
@@ -115,6 +118,61 @@
         color: #b61356;
         min-height: 1.4em;
       }
+
+      .love-overlay {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+        z-index: 4;
+      }
+
+      .love-text {
+        opacity: 0;
+        transform: scale(0.7);
+        transition: opacity 500ms ease, transform 500ms ease;
+        padding: 0.8rem 1.2rem;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.8);
+        color: #b61356;
+        font-size: clamp(1.3rem, 4vw, 2.4rem);
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .love-text.show {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .confetti-container {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 3;
+      }
+
+      .confetti {
+        position: absolute;
+        width: 10px;
+        height: 16px;
+        border-radius: 3px;
+        opacity: 0.95;
+        animation: confetti-burst 1200ms ease-out forwards;
+      }
+
+      @keyframes confetti-burst {
+        from {
+          transform: translate(0, 0) rotate(0deg);
+          opacity: 1;
+        }
+        to {
+          transform: translate(var(--tx), var(--ty)) rotate(var(--rot));
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <body>
@@ -135,10 +193,18 @@
       <p class="success" id="message" aria-live="polite"></p>
     </main>
 
+    <div class="confetti-container" id="confetti" aria-hidden="true"></div>
+    <div class="love-overlay" aria-hidden="true">
+      <p class="love-text" id="loveText">I Love You so much My Love ❤️</p>
+    </div>
+
     <script>
       const yesBtn = document.getElementById("yesBtn");
       const noBtn = document.getElementById("noBtn");
       const message = document.getElementById("message");
+      const confettiContainer = document.getElementById("confetti");
+      const loveText = document.getElementById("loveText");
+      const confettiColors = ["#ff2f70", "#ffcf5c", "#5fd3ff", "#8dff8a", "#c08bff", "#ff7aa2"];
       let noClicks = 0;
 
       noBtn.addEventListener("click", () => {
@@ -154,8 +220,26 @@
         }
       });
 
+      function burstConfetti() {
+        for (let i = 0; i < 140; i += 1) {
+          const piece = document.createElement("span");
+          piece.className = "confetti";
+          piece.style.left = `${50 + (Math.random() * 22 - 11)}%`;
+          piece.style.top = `${45 + (Math.random() * 8 - 4)}%`;
+          piece.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+          piece.style.setProperty("--tx", `${(Math.random() - 0.5) * 1200}px`);
+          piece.style.setProperty("--ty", `${Math.random() * 800 - 200}px`);
+          piece.style.setProperty("--rot", `${Math.random() * 1080 - 540}deg`);
+          piece.style.animationDuration = `${900 + Math.random() * 800}ms`;
+          confettiContainer.appendChild(piece);
+          piece.addEventListener("animationend", () => piece.remove());
+        }
+      }
+
       yesBtn.addEventListener("click", () => {
         message.textContent = "Yayyyyy! Best Valentine ever! 🥳💘";
+        loveText.classList.add("show");
+        burstConfetti();
       });
     </script>
   </body>
